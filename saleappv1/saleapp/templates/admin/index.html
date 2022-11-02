@@ -1,0 +1,15 @@
+{% extends 'admin/master.html' %}
+
+{% block body %}
+<form action="/action_page.php">
+    <div class="mb-3 mt-3">
+        <label for="username" class="form-label">username:</label>
+        <input type="username" class="form-control" id="username" placeholder="Enter username" name="username">
+    </div>
+    <div class="mb-3">
+        <label for="pwd" class="form-label">Password:</label>
+        <input type="password" class="form-control" id="pwd" placeholder="Enter password" name="pswd">
+    </div>
+    <button type="submit" class="btn btn-primary">Dang nhap</button>
+</form>
+{% endblock %}

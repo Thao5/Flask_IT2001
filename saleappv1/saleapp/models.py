@@ -1,7 +1,14 @@
-from sqlalchemy import Column, Integer, String, Float, Text, Boolean, ForeignKey
+from sqlalchemy import Column, Integer, String, Float, Text, Boolean, ForeignKey, Enum
 from sqlalchemy.orm import relationship
 from saleapp import db
 from saleapp import app
+from enum import Enum as UserEnum
+from flask_login import UserMixin
+
+
+class UserRole(UserEnum):
+    USER = 1
+    ADMIN = 2
 
 
 class BaseModel(db.Model):
@@ -13,6 +20,8 @@ class Category(BaseModel):
     __tablename__ = 'category'
     name = Column(String(20), nullable=False)
     products = relationship('Product', backref='category', lazy=True)
+    def __str__(self):
+        return self.name
 
 
 class Product(BaseModel):
@@ -23,6 +32,19 @@ class Product(BaseModel):
     image = Column(String(100))
     active = Column(Boolean, default=True)
     category_id = Column(Integer, ForeignKey(Category.id), nullable="False")
+    def __str__(self):
+        return self.name
+
+
+class user(BaseModel):
+    name = Column(String(50), nullable=False)
+    username = Column(String(50), nullable=False)
+    password = Column(String(50), nullable=False)
+    avatar = Column(String(100), nullable=False)
+    active = Column(Boolean, default = True)
+    user_role = Column(Enum(UserRole), default=UserRole.USER)
+    def __str__(self):
+        return self.name
 
 
 if __name__ == '__main__':
@@ -79,6 +101,9 @@ if __name__ == '__main__':
             pro = Product(name=p['name'], price=p['price'], image=p['image'], description=p['description'], category_id=p['category_id'])
             db.session.add(pro)
 
-
+        import  hashlib
+        password = str(hashlib.md5('123456'.encode('utf-8')).digest())
+        u = user(name='name', username='admin', password=password, user_role=UserRole.ADMIN, avatar='')
+        db.session.add(u)
         db.session.commit()
-        #db.create_all()
+        # db.create_all()
