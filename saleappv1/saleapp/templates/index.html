@@ -1,7 +1,6 @@
 {% extends 'layout/base.html' %}
 
 {% block content %}
-
 {% if products %}
 <div class="row">
     {% for p in products %}
@@ -21,5 +20,4 @@
 {% else %}
 <p class="text-danger">Không có sản phẩm nào!</p>
 {% endif %}
-
 {% endblock %}
