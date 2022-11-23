@@ -6,6 +6,7 @@ from flask_login import current_user
 from wtforms import TextAreaField
 from wtforms.widgets import TextArea
 
+
 class CKTextAreaWidget(TextArea):
     def __call__(self, field, **kwargs):
         if kwargs.get('class'):
@@ -42,6 +43,7 @@ class StatsView(BaseView):
     @expose('/')
     def index(self):
         return self.render('admin/stats.html')
+
 
 
 admin = Admin(app=app, name='Quản trị bán hàng', template_mode='bootstrap4')

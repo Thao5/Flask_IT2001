@@ -16,21 +16,29 @@
                 {% endfor %}
 
                 {% if current_user.is_authenticated %}
-                <li class="nav-item">
+                 <li class="nav-item">
                     <a class="nav-link text-success" href="/">
-                        <img src="{{ current_user.avatar }}" width="40" class="rounded-circle" alt="{{ current_user.name }}"/>
-                        chao <span class="text-info">{{ current_user.name }}</span>
+                        <img src="{{ current_user.avatar }}" width="40" class="rounded-circle" alt="{{ current_user.name }}" />
+                        Chào <span class="text-info">{{ current_user.name }}</span>
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link text-danger" href="/logout">Đăng ký </a>
+                    <a class="nav-link text-danger" href="/logout">Đăng xuất</a>
                 </li>
                 {% else %}
-                <li class="nav-item">
-                    <a class="nav-link text-success" href="/login">Đăng nhập </a>
+                 <li class="nav-item">
+                    <a class="nav-link text-success" href="/login">Đăng nhập</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link text-danger" href="/register">Đăng ký </a>
+                    <a class="nav-link text-danger" href="/register">Đăng ký</a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link text-info" href="/giohang">
+                        <i class="fa-solid fa-bolt-lightning"></i>
+                        <span>Giỏ hàng</span>
+                        <span class="badge bg-danger cart-counter">{{cart.total_quantity}}</span>
+                    </a>
                 </li>
                 {% endif %}
 

@@ -1,14 +1,11 @@
-from flask import render_template, request, redirect
-from saleapp import dao, app, login
-from flask_login import login_user, logout_user, current_user, login_required
+from flask import render_template, request, redirect, session, jsonify
+from saleapp import dao, app, login, admin, utils
+from flask_login import login_user, logout_user, current_user
+from saleapp.decorators import annonymous_user
 import cloudinary.uploader
-from saleapp.decorator import annonymous_user
-from saleapp import admin
-
 
 
 @app.route("/")
-@login_required
 def index():
     cate_id = request.args.get('category_id')
     kw = request.args.get('keyword')
@@ -33,42 +30,48 @@ def admin_login():
 
     return redirect('/admin')
 
+
 @app.route('/register', methods=['get', 'post'])
 def register():
     err_msg = ''
     if request.method.__eq__('POST'):
         password = request.form['password']
-        confirm = request.form['confirm_password']
+        confirm = request.form['confirm']
         if password.__eq__(confirm):
-            #upload avatar
+            # upload
             avatar = ''
+
             if request.files:
                 res = cloudinary.uploader.upload(request.files['avatar'])
                 avatar = res['secure_url']
-            #save user
+
+            # save user
             try:
-                dao.register(name=request.form['name'], username=request.form['username'], password=password, avatar= avatar)
+                dao.register(name=request.form['name'],
+                             username=request.form['username'],
+                             password=password, avatar=avatar)
                 return redirect('/login')
             except:
-                err_msg = 'Hệ thống lỗi'
+                err_msg = 'Hệ thống đang có lỗi! Vui lòng quay lại sau!'
         else:
-            err_msg = "mk sai"
+            err_msg = 'Mật khẩu KHÔNG khớp!'
+
     return render_template('register.html', err_msg=err_msg)
 
 
 @app.route('/login', methods=['get', 'post'])
 @annonymous_user
 def login_my_user():
-    if current_user.is_authenticated:
-        return redirect('/')
     if request.method.__eq__('POST'):
-        u = request.form['username']
+        username = request.form['username']
         password = request.form['password']
-        user = dao.auth_user(username=u, password=password)
+        user = dao.auth_user(username=username, password=password)
         if user:
             login_user(user=user)
-            return  redirect('/')
+            return redirect('/')
+
     return render_template('login.html')
+
 
 @app.route('/logout')
 def logout_my_user():
@@ -76,11 +79,57 @@ def logout_my_user():
     return redirect('/login')
 
 
+@app.route('/giohang')
+def gio_hang():
+    session['cart'] = {
+        "1": {
+            "id": "1",
+            "name": "iPhone 13",
+            "price": 12000,
+            "quantity": 2
+        }, "2": {
+            "id": "2",
+            "name": "iPhone 14",
+            "price": 15000,
+            "quantity": 5
+        }
+    }
+    return render_template('giohang.html')
+
+
+@app.route('/api/gio_hang', methods=['post'])
+def add_to_cart():
+    data = request.json
+    id = str(data['id'])
+
+
+    key = app.config['CART_KEY']
+    cart = session[key] if key in session else{}
+    if id in cart:
+        cart[id]['quantity'] += 1
+    else:
+        name = data['name']
+        price = data['price']
+
+        cart[id] = {
+
+                "id": id,
+                "name": name,
+                "price": price,
+                "quantity": 1
+
+        }
+    session[key] = cart
+
+    return jsonify(utils.cart_stats(cart=cart))
+
+
 @app.context_processor
 def common_attr():
     categories = dao.load_categories()
     return {
-        'categories': categories
+        'categories': categories,
+        'cart': utils.cart_stats((session.get(app.config['CART_KEY'])))
     }
 
 

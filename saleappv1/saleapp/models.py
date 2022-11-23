@@ -52,13 +52,14 @@ class User(BaseModel, UserMixin):
 
 if __name__ == '__main__':
     with app.app_context():
-        db.create_all()
-        c1 = Category(name='Điện thoại')
-        c2 = Category(name='Máy tính bảng')
-        c3 = Category(name='Phụ kiện')
+        # db.create_all()
 
-        db.session.add_all([c1, c2, c3])
-        db.session.commit()
+        # c1 = Category(name='Điện thoại')
+        # c2 = Category(name='Máy tính bảng')
+        # c3 = Category(name='Phụ kiện')
+        #
+        # db.session.add_all([c1, c2, c3])
+        # db.session.commit()
         p1 = Product(name='iPhone 13 Pro Max', description='Apple, 128GB', price=24000000,
                      image='https://res.cloudinary.com/dxxwcby8l/image/upload/v1646729569/fi9v6vdljyfmiltegh7k.jpg',
                      category_id=1)
@@ -85,3 +86,17 @@ if __name__ == '__main__':
                  avatar='https://res.cloudinary.com/dxxwcby8l/image/upload/v1647248722/r8sjly3st7estapvj19u.jpg')
         db.session.add(u)
         db.session.commit()
+
+        session['cart'] = {
+            "1": {
+                "id": "1",
+                "name": "iPhone 13",
+                "price": 12000,
+                "quantity": 2
+            }, "2": {
+                "id": "2",
+                "name": "iPhone 14",
+                "price": 15000,
+                "quantity": 5
+            }
+        }
